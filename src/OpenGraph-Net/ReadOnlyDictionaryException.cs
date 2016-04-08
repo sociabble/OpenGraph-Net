@@ -2,7 +2,7 @@
 // Copyright SHHH Innovations LLC
 // </copyright>
 
-namespace OpenGraph_Net
+namespace OpenGraphNet
 {
     using System;
 

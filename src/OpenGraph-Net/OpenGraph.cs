@@ -1,25 +1,14 @@
-﻿// <copyright file="OpenGraph.cs" company="SHHH Innovations LLC">
-// Copyright SHHH Innovations LLC
+﻿// <copyright file="OpenGraph.cs">
+// Copyright Geoff Horsey 2016
 // </copyright>
-
-using System.Diagnostics.CodeAnalysis;
-
-[module: SuppressMessage("Microsoft.StyleCop.CSharp.OrderingRules", "*", Justification = "Reviewed.")]
-
-namespace OpenGraph_Net
+namespace OpenGraphNet
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.IO;
     using System.Linq;
-    using System.Net;
     using System.Text.RegularExpressions;
     using HtmlAgilityPack;
-    using System.Text;
-    using System.Collections.Specialized;
-
-
 
     /// <summary>
     /// Represents Open Graph meta data parsed from HTML
@@ -29,42 +18,41 @@ namespace OpenGraph_Net
         /// <summary>
         /// The required meta
         /// </summary>
-        private static readonly string[] RequiredMeta = new string[] { "title", "type", "image", "url" };
+        private static readonly string[] RequiredMeta = { "title", "type", "image", "url" };
 
-        /// <summary>
-        /// The base types
-        /// </summary>
-        private static readonly string[] BaseTypes = new string[]
-        {
-            // activities
-            "activity", "sport",
+        /////// <summary>
+        /////// The base types
+        /////// </summary>
+        ////private static readonly string[] BaseTypes = {
+        ////    // activities
+        ////    "activity", "sport",
 
-            // business
-            "bar", "company", "cafe", "hotel", "restaurant",
+        ////    // business
+        ////    "bar", "company", "cafe", "hotel", "restaurant",
 
-            // groups
-            "cause", "sports_league", "sports_team",
+        ////    // groups
+        ////    "cause", "sports_league", "sports_team",
 
-            // organizations
-            "band", "government", "non_profit", "school", "university",
+        ////    // organizations
+        ////    "band", "government", "non_profit", "school", "university",
 
-            // people
-            "actor", "athelete", "author", "director", "musician", "politician", "profile", "public_figure",
+        ////    // people
+        ////    "actor", "athelete", "author", "director", "musician", "politician", "profile", "public_figure",
 
-            // places
-            "city", "country", "landmark", "state_province",
+        ////    // places
+        ////    "city", "country", "landmark", "state_province",
 
-            // products
-            "album", "book", "drink", "food", "game", "movie", "product", "song", "tv_show",
+        ////    // products
+        ////    "album", "book", "drink", "food", "game", "movie", "product", "song", "tv_show",
 
-            // website
-            "article", "blog", "website"
-        };
+        ////    // website
+        ////    "article", "blog", "website"
+        ////};
 
         /// <summary>
         /// The open graph data
         /// </summary>
-        private IDictionary<string, string> openGraphData;
+        private readonly IDictionary<string, string> openGraphData;
 
         /// <summary>
         /// The local alternatives
@@ -190,7 +178,7 @@ namespace OpenGraph_Net
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.

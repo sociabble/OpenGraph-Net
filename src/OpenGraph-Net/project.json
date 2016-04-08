@@ -1,15 +1,30 @@
 {
-  "version": "2.0.0-*",
-  "description": "GH.Domain Class Library",
-  "authors": [ "geoff" ],
-  "tags": [ "" ],
+  "version": "1.2.0.1-*",
+  "description": "Open Graph .Net Parser",
+  "authors": [ "Geoff Horsey" ],
+  "tags": [ "OpenGraph" ],
   "projectUrl": "http://www.geoffhorsey.com",
   "licenseUrl": "",
   "frameworks": {
     "dnx451": {
       "dependencies": {
-        "SHHH.Cryptography": "1.2.0.3",
-        "MarkdownDeep.NET": "1.5.0"
+        "HtmlAgilityPack.NetCore": "1.4.9.2"
+      }
+    },
+    "dnxcore50": {
+      "dependencies": {
+        "HtmlAgilityPack.NetCore": "1.4.9.2"
+      }
+    },
+    "dotnet54": {
+      "dependencies": {
+        "HtmlAgilityPack": "1.4.9",
+        "System.Text.RegularExpressions": "4.0.0-beta-23019"
+      }
+    },
+    "net541": {
+      "dependencies": {
+        "HtmlAgilityPack": "1.4.9"
       }
     }
   },
