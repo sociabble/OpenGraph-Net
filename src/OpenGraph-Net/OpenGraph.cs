@@ -1,5 +1,5 @@
 ﻿// <copyright file="OpenGraph.cs">
-// Copyright Geoff Horsey 2016
+// Copyright 2016 Geoff Horsey
 // </copyright>
 namespace OpenGraphNet
 {
@@ -37,7 +37,7 @@ namespace OpenGraphNet
         ////    "band", "government", "non_profit", "school", "university",
 
         ////    // people
-        ////    "actor", "athelete", "author", "director", "musician", "politician", "profile", "public_figure",
+        ////    "actor", "athlete", "author", "director", "musician", "politician", "profile", "public_figure",
 
         ////    // places
         ////    "city", "country", "landmark", "state_province",
@@ -210,15 +210,15 @@ namespace OpenGraphNet
         /// Downloads the HTML of the specified URL and parses it for open graph content.
         /// </summary>
         /// <param name="url">The URL to download the HTML from.</param>
-        /// <param name="userAgent">The user agent to use when downloading content.  The default is <c>"facebookexternalhit"</c> which is required for some site (like amazon) to include open graph data.</param>
-        /// <param name="validateSpecifiction">if set to <c>true</c> <see cref="OpenGraph"/> will validate against the specification.</param>
+        /// <param name="userAgent">The user agent to use when downloading content.  The default is <c>"facebookExternalHit"</c> which is required for some site (like amazon) to include open graph data.</param>
+        /// <param name="validateSpecification">if set to <c>true</c> <see cref="OpenGraph"/> will validate against the specification.</param>
         /// <returns>
         ///   <see cref="OpenGraph" />
         /// </returns>
-        public static OpenGraph ParseUrl(string url, string userAgent = "facebookexternalhit", bool validateSpecifiction = false)
+        public static OpenGraph ParseUrl(string url, string userAgent = "facebookexternalhit", bool validateSpecification = false)
         {
             Uri uri = new Uri(url);
-            return ParseUrl(uri, userAgent, validateSpecifiction);
+            return ParseUrl(uri, userAgent, validateSpecification);
         }
 
         /// <summary>
@@ -228,15 +228,12 @@ namespace OpenGraphNet
         /// <param name="userAgent">The user agent to use when downloading content.  The default is <c>"facebookexternalhit"</c> which is required for some site (like amazon) to include open graph data.</param>
         /// <param name="validateSpecification">if set to <c>true</c> verify that the document meets the required attributes of the open graph specification.</param>
         /// <returns><see cref="OpenGraph"/></returns>
-        public static OpenGraph ParseUrl(Uri url, string userAgent = "facebookexternalhit", bool validateSpecification = false)
+        public static OpenGraph ParseUrl(Uri url, string userAgent = "facebookExternalHit", bool validateSpecification = false)
         {
-            OpenGraph result = new OpenGraph();
+            var result = new OpenGraph { OriginalUrl = url };
 
-            result.OriginalUrl = url;
-
-            string html = string.Empty;
-            HttpDownloader downloader = new HttpDownloader(url, null, userAgent);
-            html = downloader.GetPage();
+            var downloader = new HttpDownloader(url, null, userAgent);
+            var html = downloader.GetPage();
 
             return ParseHtml(result, html, validateSpecification);
         }
@@ -260,7 +257,7 @@ namespace OpenGraphNet
         /// <param name="content">The content.</param>
         /// <param name="validateSpecification">if set to <c>true</c> [validate specification].</param>
         /// <returns><see cref="OpenGraph"/></returns>
-        /// <exception cref="OpenGraph_Net.InvalidSpecificationException">The parsed HTML does not meet the open graph specification</exception>
+        /// <exception cref="OpenGraphNet.InvalidSpecificationException">The parsed HTML does not meet the open graph specification</exception>
         private static OpenGraph ParseHtml(OpenGraph result, string content, bool validateSpecification = false)
         {
             int indexOfClosingHead = Regex.Match(content, "</head>").Index;
@@ -295,19 +292,19 @@ namespace OpenGraphNet
                 result.openGraphData.Add(property, value);
             }
 
-            string type = string.Empty;
+            string type;
             result.openGraphData.TryGetValue("type", out type);
             result.Type = type ?? string.Empty;
 
-            string title = string.Empty;
+            string title;
             result.openGraphData.TryGetValue("title", out title);
             result.Title = title ?? string.Empty;
 
             try
             {
-                string image = string.Empty;
+                string image;
                 result.openGraphData.TryGetValue("image", out image);
-                result.Image = new Uri(image);
+                result.Image = new Uri(image ?? string.Empty);
             }
             catch (UriFormatException)
             {
@@ -320,9 +317,9 @@ namespace OpenGraphNet
 
             try
             {
-                string url = string.Empty;
+                string url;
                 result.openGraphData.TryGetValue("url", out url);
-                result.Url = new Uri(url);
+                result.Url = new Uri(url ?? string.Empty);
             }
             catch (UriFormatException)
             {
@@ -335,12 +332,9 @@ namespace OpenGraphNet
 
             if (validateSpecification)
             {
-                foreach (string required in RequiredMeta)
+                if (RequiredMeta.Any(required => !result.ContainsKey(required)))
                 {
-                    if (!result.ContainsKey(required))
-                    {
-                        throw new InvalidSpecificationException("The parsed HTML does not meet the open graph specification");
-                    }
+                    throw new InvalidSpecificationException("The parsed HTML does not meet the open graph specification");
                 }
             }
 
@@ -358,10 +352,8 @@ namespace OpenGraphNet
             {
                 return CleanOpenGraphKey(metaTag.Attributes["property"].Value);
             }
-            else
-            {
-                return CleanOpenGraphKey(metaTag.Attributes["name"].Value);
-            }
+
+            return CleanOpenGraphKey(metaTag.Attributes["name"].Value);
         }
 
         /// <summary>
@@ -396,7 +388,7 @@ namespace OpenGraphNet
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        /// <exception cref="OpenGraph_Net.ReadOnlyDictionaryException">Cannot change a read only dictionary</exception>
+        /// <exception cref="OpenGraphNet.ReadOnlyDictionaryException">Cannot change a read only dictionary</exception>
         public void Add(string key, string value)
         {
             throw new ReadOnlyDictionaryException();
@@ -418,17 +410,14 @@ namespace OpenGraphNet
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
         /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
-        public ICollection<string> Keys
-        {
-            get { return this.openGraphData.Keys; }
-        }
+        public ICollection<string> Keys => this.openGraphData.Keys;
 
         /// <summary>
         /// Removes the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns><c>false</c></returns>
-        /// <exception cref="OpenGraph_Net.ReadOnlyDictionaryException">Cannot change a read only dictionary</exception>
+        /// <exception cref="OpenGraphNet.ReadOnlyDictionaryException">Cannot change a read only dictionary</exception>
         public bool Remove(string key)
         {
             throw new ReadOnlyDictionaryException();
@@ -449,17 +438,14 @@ namespace OpenGraphNet
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
         /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
-        public ICollection<string> Values
-        {
-            get { return this.openGraphData.Values; }
-        }
+        public ICollection<string> Values => this.openGraphData.Values;
 
         /// <summary>
         /// Gets or sets the element with the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns>returns the open graph value at the specified key</returns>
-        /// <exception cref="OpenGraph_Net.ReadOnlyDictionaryException">Cannot modify a read-only collection</exception>
+        /// <exception cref="OpenGraphNet.ReadOnlyDictionaryException">Cannot modify a read-only collection</exception>
         public string this[string key]
         {
             get
@@ -486,7 +472,7 @@ namespace OpenGraphNet
         /// Adds the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <exception cref="OpenGraph_Net.ReadOnlyDictionaryException">Cannot change a read only dictionary</exception>
+        /// <exception cref="OpenGraphNet.ReadOnlyDictionaryException">Cannot change a read only dictionary</exception>
         public void Add(KeyValuePair<string, string> item)
         {
             throw new ReadOnlyDictionaryException();
@@ -495,7 +481,7 @@ namespace OpenGraphNet
         /// <summary>
         /// Clears this instance.
         /// </summary>
-        /// <exception cref="OpenGraph_Net.ReadOnlyDictionaryException">Cannot change a read only dictionary</exception>
+        /// <exception cref="OpenGraphNet.ReadOnlyDictionaryException">Cannot change a read only dictionary</exception>
         public void Clear()
         {
             throw new ReadOnlyDictionaryException();
@@ -527,26 +513,20 @@ namespace OpenGraphNet
         /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </summary>
         /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-        public int Count
-        {
-            get { return this.openGraphData.Count; }
-        }
+        public int Count => this.openGraphData.Count;
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
         /// </summary>
         /// <returns>true</returns>
-        public bool IsReadOnly
-        {
-            get { return true; }
-        }
+        public bool IsReadOnly => true;
 
         /// <summary>
         /// Removes the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>Returns false</returns>
-        /// <exception cref="OpenGraph_Net.ReadOnlyDictionaryException">Cannot change a read only dictionary</exception>
+        /// <exception cref="OpenGraphNet.ReadOnlyDictionaryException">Cannot change a read only dictionary</exception>
         public bool Remove(KeyValuePair<string, string> item)
         {
             throw new ReadOnlyDictionaryException();

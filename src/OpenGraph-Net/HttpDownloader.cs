@@ -1,12 +1,12 @@
-﻿using System;
-using System.IO;
-using System.IO.Compression;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
-
-namespace OpenGraphNet
+﻿namespace OpenGraphNet
 {
+    using System;
+    using System.IO;
+    using System.IO.Compression;
+    using System.Net;
+    using System.Text;
+    using System.Text.RegularExpressions;
+
     // http://stackoverflow.com/a/2700707
     /// <summary>
     /// Http Downloader

@@ -1,5 +1,5 @@
-﻿// <copyright file="ReadOnlyDictionaryException.cs" company="SHHH Innovations LLC">
-// Copyright SHHH Innovations LLC
+﻿// <copyright file="ReadOnlyDictionaryException.cs">
+// Copyright 2016 Geoff Horsey
 // </copyright>
 
 namespace OpenGraphNet
