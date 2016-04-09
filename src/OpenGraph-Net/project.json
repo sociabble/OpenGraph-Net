@@ -13,13 +13,8 @@
     },
     "dnxcore50": {
       "dependencies": {
-        "HtmlAgilityPack.NetCore": "1.4.9.2"
-      }
-    },
-    "dotnet54": {
-      "dependencies": {
-        "HtmlAgilityPack": "1.4.9",
-        "System.Text.RegularExpressions": "4.0.0-beta-23019"
+        "HtmlAgilityPack.NetCore": "1.4.9.2",
+        "System.IO.Compression": "4.0.0"
       }
     },
     "net541": {
@@ -34,6 +29,7 @@
     "System.Collections": "4.0.11-beta-23516",
     "System.Linq": "4.0.1-beta-23516",
     "System.Runtime": "4.0.21-beta-23516",
-    "System.Threading": "4.0.11-beta-23516"
+    "System.Threading": "4.0.11-beta-23516",
+    "System.Net.Http": "4.0.1-beta-23516"
   }
 }

@@ -1,11 +1,15 @@
 ﻿namespace OpenGraphNet
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.IO.Compression;
-    using System.Net;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Text;
     using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
 
     // http://stackoverflow.com/a/2700707
     /// <summary>
@@ -32,12 +36,11 @@
         public Encoding Encoding { get; set; }
 
         /// <summary>
-        /// Gets or sets the headers.
+        /// Gets or sets the URL.
         /// </summary>
         /// <value>
-        /// The headers.
+        /// The URL.
         /// </value>
-        public WebHeaderCollection Headers { get; set; }
         public Uri Url { get; set; }
 
         /// <summary>
@@ -66,121 +69,147 @@
         /// <summary>
         /// Gets the page.
         /// </summary>
-        /// <returns>The HTML content of a page</returns>
-        public string GetPage()
+        /// <returns>
+        /// The HTML content of a page
+        /// </returns>
+        public async Task<string> GetPageAsync()
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(this.Url);
+            var client = new HttpClient();
             if (!string.IsNullOrEmpty(this.referer))
-                request.Referer = this.referer;
+            {
+                client.DefaultRequestHeaders.Referrer = new Uri(this.referer);
+            }
             if (!string.IsNullOrEmpty(this.userAgent))
-                request.UserAgent = this.userAgent;
+            {
+                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(this.userAgent, "1.0"));
+            }
 
-            request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("gzip"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("deflate"));
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (var response = await client.GetAsync(this.Url))
             {
                 this.Headers = response.Headers;
-                this.Url = response.ResponseUri;
-                return this.ProcessContent(response);
+                return await this.ProcessContentAsync(response);
             }
         }
+
+        public HttpResponseHeaders Headers { get; set; }
 
         /// <summary>
         /// Processes the content.
         /// </summary>
         /// <param name="response">The response.</param>
         /// <returns>The processed content</returns>
-        private string ProcessContent(HttpWebResponse response)
+        private async Task<string> ProcessContentAsync(HttpResponseMessage response)
         {
             this.SetEncodingFromHeader(response);
 
-            var s = response.GetResponseStream();
-            if (s == null)
+            using (var source = await response.Content.ReadAsStreamAsync())
             {
-                throw new NullReferenceException("The response stream was null!");
-            }
 
-            if (response.ContentEncoding.ToLower().Contains("gzip"))
-            {
-                s = new GZipStream(s, CompressionMode.Decompress);
-            }
-            else if (response.ContentEncoding.ToLower().Contains("deflate"))
-            {
-                s = new DeflateStream(s, CompressionMode.Decompress);
-            }
-
-            var memStream = new MemoryStream();
-            int bytesRead;
-            var buffer = new byte[0x1000];
-            for (bytesRead = s.Read(buffer, 0, buffer.Length); bytesRead > 0; bytesRead = s.Read(buffer, 0, buffer.Length))
-            {
-                memStream.Write(buffer, 0, bytesRead);
-            }
-            s.Close();
-            string html;
-            memStream.Position = 0;
-            using (var r = new StreamReader(memStream, this.Encoding))
-            {
-                html = r.ReadToEnd().Trim();
-                html = this.CheckMetaCharSetAndReEncode(memStream, html);
-            }
-
-            return html;
-        }
-
-        private void SetEncodingFromHeader(HttpWebResponse response)
-        {
-            string charset = null;
-            if (string.IsNullOrEmpty(response.CharacterSet))
-            {
-                Match m = Regex.Match(response.ContentType, @";\s*charset\s*=\s*(?<charset>.*)", RegexOptions.IgnoreCase);
-                if (m.Success)
+                if (source == null)
                 {
-                    charset = m.Groups["charset"].Value.Trim( '\'', '"');
-                }
-            }
-            else
-            {
-                charset = response.CharacterSet;
-            }
-            if (!string.IsNullOrEmpty(charset))
-            {
-                try
-                {
-                    this.Encoding = Encoding.GetEncoding(charset);
-                }
-                catch (ArgumentException)
-                {
-                }
-            }
-        }
-
-        private string CheckMetaCharSetAndReEncode(Stream memStream, string html)
-        {
-            Match m = new Regex(@"<meta\s+.*?charset\s*=\s*(?<charset>[A-Za-z0-9_-]+)", RegexOptions.Singleline | RegexOptions.IgnoreCase).Match(html);
-            if (m.Success)
-            {
-                ////string charset = m.Groups["charset"].Value.ToLower() ?? "iso-8859-1";
-                string charset = m.Groups["charset"].Value.ToLower();
-                if ((charset == "unicode") || (charset == "utf-16"))
-                {
-                    charset = "utf-8";
+                    throw new NullReferenceException("The response stream was null!");
                 }
 
-                try
+                string html;
+                using (var uncompressed = this.GetUncompressedStream(source, response.Content.Headers.ContentEncoding))
                 {
-                    Encoding metaEncoding = Encoding.GetEncoding(charset);
-                    if (!this.Encoding.Equals(metaEncoding))
+
+                    using (var memStream = new MemoryStream())
                     {
-                        memStream.Position = 0L;
-                        StreamReader recodeReader = new StreamReader(memStream, metaEncoding);
-                        html = recodeReader.ReadToEnd().Trim();
-                        recodeReader.Close();
+                        int bytesRead;
+                        var buffer = new byte[0x1000];
+                        for (bytesRead = uncompressed.Read(buffer, 0, buffer.Length);
+                             bytesRead > 0;
+                             bytesRead = uncompressed.Read(buffer, 0, buffer.Length))
+                        {
+                            memStream.Write(buffer, 0, bytesRead);
+                        }
+
+                        memStream.Position = 0;
+                        using (var r = new StreamReader(memStream, this.Encoding))
+                        {
+                            html = r.ReadToEnd().Trim();
+                            html = this.CheckMetaCharSetAndReEncode(memStream, html);
+                        }
                     }
                 }
+                return html;
+            }
+        }
+
+        /// <summary>
+        /// Gets the uncompressed stream.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="contentEncoding">The content encoding.</param>
+        /// <returns></returns>
+        private Stream GetUncompressedStream(Stream source, ICollection<string> contentEncoding)
+        {
+            if (contentEncoding.Any(ce => "gzip".Equals(ce, StringComparison.OrdinalIgnoreCase)))
+            {
+                return new GZipStream(source, CompressionMode.Decompress);
+            }
+
+            return contentEncoding.Any(ce => "deflate".Equals(ce, StringComparison.OrdinalIgnoreCase)) ? new DeflateStream(source, CompressionMode.Decompress) : source;
+        }
+
+        /// <summary>
+        /// Sets the encoding from header.
+        /// </summary>
+        /// <param name="response">The response.</param>
+        private void SetEncodingFromHeader(HttpResponseMessage response)
+        {
+            if (!string.IsNullOrEmpty(response.Content.Headers.ContentType.CharSet))
+            {
+                try
+                {
+                    this.Encoding = Encoding.GetEncoding(response.Content.Headers.ContentType.CharSet);
+                }
                 catch (ArgumentException)
                 {
                 }
+            }
+        }
+
+        /// <summary>
+        /// Checks the meta character set and re encode.
+        /// </summary>
+        /// <param name="memStream">The memory stream.</param>
+        /// <param name="html">The HTML.</param>
+        /// <returns>The reencoded HTML</returns>
+        private string CheckMetaCharSetAndReEncode(Stream memStream, string html)
+        {
+            var m = new Regex(@"<meta\s+.*?charset\s*=\s*(?<charset>[A-Za-z0-9_-]+)", RegexOptions.Singleline | RegexOptions.IgnoreCase).Match(html);
+
+            if (!m.Success)
+            {
+                return html;
+            }
+
+            var charset = m.Groups["charset"].Value.ToLower();
+            if ((charset == "unicode") || (charset == "utf-16"))
+            {
+                charset = "utf-8";
+            }
+
+            try
+            {
+                var metaEncoding = Encoding.GetEncoding(charset);
+                if (!this.Encoding.Equals(metaEncoding))
+                {
+                    memStream.Position = 0L;
+                    using (var recodeReader = new StreamReader(memStream, metaEncoding))
+                    {
+                        html = recodeReader.ReadToEnd().Trim();
+                    }
+                }
+            }
+            catch (ArgumentException)
+            {
+                //Ignore
             }
 
             return html;

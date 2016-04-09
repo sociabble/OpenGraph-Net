@@ -9,7 +9,6 @@ namespace OpenGraphNet
     /// <summary>
     /// An invalid specification exception
     /// </summary>
-    [Serializable]
     public class InvalidSpecificationException : Exception
     {
         /// <summary>

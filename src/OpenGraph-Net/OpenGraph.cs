@@ -5,9 +5,10 @@ namespace OpenGraphNet
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
+
     using HtmlAgilityPack;
 
     /// <summary>
@@ -215,10 +216,10 @@ namespace OpenGraphNet
         /// <returns>
         ///   <see cref="OpenGraph" />
         /// </returns>
-        public static OpenGraph ParseUrl(string url, string userAgent = "facebookexternalhit", bool validateSpecification = false)
+        public static async Task<OpenGraph> ParseUrlAsync(string url, string userAgent = "facebookexternalhit", bool validateSpecification = false)
         {
             Uri uri = new Uri(url);
-            return ParseUrl(uri, userAgent, validateSpecification);
+            return await ParseUrlAsync(uri, userAgent, validateSpecification);
         }
 
         /// <summary>
@@ -228,12 +229,12 @@ namespace OpenGraphNet
         /// <param name="userAgent">The user agent to use when downloading content.  The default is <c>"facebookexternalhit"</c> which is required for some site (like amazon) to include open graph data.</param>
         /// <param name="validateSpecification">if set to <c>true</c> verify that the document meets the required attributes of the open graph specification.</param>
         /// <returns><see cref="OpenGraph"/></returns>
-        public static OpenGraph ParseUrl(Uri url, string userAgent = "facebookExternalHit", bool validateSpecification = false)
+        public static async Task<OpenGraph> ParseUrlAsync(Uri url, string userAgent = "facebookExternalHit", bool validateSpecification = false)
         {
             var result = new OpenGraph { OriginalUrl = url };
 
             var downloader = new HttpDownloader(url, null, userAgent);
-            var html = downloader.GetPage();
+            var html = await downloader.GetPageAsync();
 
             return ParseHtml(result, html, validateSpecification);
         }
@@ -363,7 +364,7 @@ namespace OpenGraphNet
         /// <returns>strips the <c>og:</c> namespace from the value</returns>
         private static string CleanOpenGraphKey(string value)
         {
-            return value.Replace("og:", string.Empty).ToLower(CultureInfo.InvariantCulture);
+            return value.Replace("og:", string.Empty).ToLowerInvariant();
         }
 
         /// <summary>

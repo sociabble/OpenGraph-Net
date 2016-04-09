@@ -9,7 +9,6 @@ namespace OpenGraphNet
     /// <summary>
     /// Read-only dictionary exception
     /// </summary>
-    [Serializable]
     public class ReadOnlyDictionaryException : NotSupportedException
     {
     }
