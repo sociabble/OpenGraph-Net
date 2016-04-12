@@ -1,14 +1,13 @@
-﻿// <copyright file="InvalidSpecificationException.cs" company="SHHH Innovations LLC">
-// Copyright SHHH Innovations LLC
-// </copyright>
-
-namespace OpenGraphNet
+﻿namespace OpenGraphNet
 {
     using System;
 
     /// <summary>
     /// An invalid specification exception
     /// </summary>
+#if !DNXCORE50
+    [Serializable]
+#endif
     public class InvalidSpecificationException : Exception
     {
         /// <summary>

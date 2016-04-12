@@ -11,21 +11,47 @@
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
-    // http://stackoverflow.com/a/2700707
     /// <summary>
-    /// Http Downloader
+    /// Http Download component
     /// </summary>
+    /// <remarks>
+    ///  see <a href="http://stackoverflow.com/a/2700707">solution</a>
+    /// </remarks>
     public class HttpDownloader
     {
         /// <summary>
-        /// The referer
+        /// The referrer
         /// </summary>
-        private readonly string referer;
+        private readonly string referrer;
     
         /// <summary>
         /// The user agent
         /// </summary>
         private readonly string userAgent;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpDownloader" /> class.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="referrer">The referrer.</param>
+        /// <param name="userAgent">The user agent.</param>
+        public HttpDownloader(Uri url, string referrer, string userAgent)
+        {
+            this.Encoding = Encoding.GetEncoding("ISO-8859-1");
+            this.Url = url;
+            this.userAgent = userAgent;
+            this.referrer = referrer;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpDownloader"/> class.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="referrer">The referrer.</param>
+        /// <param name="userAgent">The user agent.</param>
+        public HttpDownloader(string url, string referrer, string userAgent) : this(new Uri(url), referrer, userAgent)
+        {
+        }
 
         /// <summary>
         /// Gets or sets the encoding.
@@ -44,27 +70,12 @@
         public Uri Url { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpDownloader"/> class.
+        /// Gets or sets the headers.
         /// </summary>
-        /// <param name="url">The URL.</param>
-        /// <param name="referer">The referer.</param>
-        /// <param name="userAgent">The user agent.</param>
-        public HttpDownloader(Uri url, string referer, string userAgent)
-        {
-            this.Encoding = Encoding.GetEncoding("ISO-8859-1");
-            this.Url = url;
-            this.userAgent = userAgent;
-            this.referer = referer;
-        }
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HttpDownloader"/> class.
-        /// </summary>
-        /// <param name="url">The URL.</param>
-        /// <param name="referer">The referer.</param>
-        /// <param name="userAgent">The user agent.</param>
-        public HttpDownloader(string url, string referer, string userAgent) : this(new Uri(url), referer, userAgent)
-        {
-        }
+        /// <value>
+        /// The headers.
+        /// </value>
+        public HttpResponseHeaders Headers { get; set; }
 
         /// <summary>
         /// Gets the page.
@@ -75,10 +86,11 @@
         public async Task<string> GetPageAsync()
         {
             var client = new HttpClient();
-            if (!string.IsNullOrEmpty(this.referer))
+            if (!string.IsNullOrEmpty(this.referrer))
             {
-                client.DefaultRequestHeaders.Referrer = new Uri(this.referer);
+                client.DefaultRequestHeaders.Referrer = new Uri(this.referrer);
             }
+
             if (!string.IsNullOrEmpty(this.userAgent))
             {
                 client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(this.userAgent, "1.0"));
@@ -94,8 +106,6 @@
             }
         }
 
-        public HttpResponseHeaders Headers { get; set; }
-
         /// <summary>
         /// Processes the content.
         /// </summary>
@@ -107,7 +117,6 @@
 
             using (var source = await response.Content.ReadAsStreamAsync())
             {
-
                 if (source == null)
                 {
                     throw new NullReferenceException("The response stream was null!");
@@ -116,7 +125,6 @@
                 string html;
                 using (var uncompressed = this.GetUncompressedStream(source, response.Content.Headers.ContentEncoding))
                 {
-
                     using (var memStream = new MemoryStream())
                     {
                         int bytesRead;
@@ -136,6 +144,7 @@
                         }
                     }
                 }
+
                 return html;
             }
         }
@@ -145,7 +154,7 @@
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="contentEncoding">The content encoding.</param>
-        /// <returns></returns>
+        /// <returns>The uncompressed <see cref="Stream"/>.</returns>
         private Stream GetUncompressedStream(Stream source, ICollection<string> contentEncoding)
         {
             if (contentEncoding.Any(ce => "gzip".Equals(ce, StringComparison.OrdinalIgnoreCase)))
@@ -179,7 +188,7 @@
         /// </summary>
         /// <param name="memStream">The memory stream.</param>
         /// <param name="html">The HTML.</param>
-        /// <returns>The reencoded HTML</returns>
+        /// <returns>The re-encoded HTML</returns>
         private string CheckMetaCharSetAndReEncode(Stream memStream, string html)
         {
             var m = new Regex(@"<meta\s+.*?charset\s*=\s*(?<charset>[A-Za-z0-9_-]+)", RegexOptions.Singleline | RegexOptions.IgnoreCase).Match(html);
@@ -209,7 +218,7 @@
             }
             catch (ArgumentException)
             {
-                //Ignore
+                // Ignore
             }
 
             return html;

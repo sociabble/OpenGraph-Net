@@ -1,8 +1,4 @@
-﻿// <copyright file="ReadOnlyDictionaryException.cs">
-// Copyright 2016 Geoff Horsey
-// </copyright>
-
-namespace OpenGraphNet
+﻿namespace OpenGraphNet
 {
     using System;
 
