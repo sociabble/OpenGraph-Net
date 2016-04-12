@@ -572,7 +572,7 @@
         }
       }
     },
-    ".NETFramework,Version=v5.4.1": {
+    ".NETFramework,Version=v4.6": {
       "HtmlAgilityPack/1.4.9": {
         "type": "package",
         "compile": {
@@ -633,7 +633,7 @@
           "lib/net45/_._": {}
         }
       },
-      "System.Runtime/4.0.21-beta-23516": {
+      "System.Runtime/4.0.0": {
         "type": "package",
         "compile": {
           "ref/net45/_._": {}
@@ -2044,7 +2044,7 @@
         }
       }
     },
-    ".NETFramework,Version=v5.4.1/win7-x86": {
+    ".NETFramework,Version=v4.6/win7-x86": {
       "HtmlAgilityPack/1.4.9": {
         "type": "package",
         "compile": {
@@ -2076,10 +2076,16 @@
         }
       },
       "runtime.win7.System.Net.Http/4.0.1-beta-23516": {
-        "type": "package"
+        "type": "package",
+        "compile": {
+          "ref/dotnet/_._": {}
+        }
       },
       "runtime.win7.System.Threading/4.0.11-beta-23516": {
-        "type": "package"
+        "type": "package",
+        "compile": {
+          "ref/dotnet/_._": {}
+        }
       },
       "System.Collections/4.0.11-beta-23516": {
         "type": "package",
@@ -2111,7 +2117,7 @@
           "lib/net45/_._": {}
         }
       },
-      "System.Runtime/4.0.21-beta-23516": {
+      "System.Runtime/4.0.0": {
         "type": "package",
         "compile": {
           "ref/net45/_._": {}
@@ -2130,7 +2136,7 @@
         }
       }
     },
-    ".NETFramework,Version=v5.4.1/win7-x64": {
+    ".NETFramework,Version=v4.6/win7-x64": {
       "HtmlAgilityPack/1.4.9": {
         "type": "package",
         "compile": {
@@ -2162,10 +2168,16 @@
         }
       },
       "runtime.win7.System.Net.Http/4.0.1-beta-23516": {
-        "type": "package"
+        "type": "package",
+        "compile": {
+          "ref/dotnet/_._": {}
+        }
       },
       "runtime.win7.System.Threading/4.0.11-beta-23516": {
-        "type": "package"
+        "type": "package",
+        "compile": {
+          "ref/dotnet/_._": {}
+        }
       },
       "System.Collections/4.0.11-beta-23516": {
         "type": "package",
@@ -2197,7 +2209,7 @@
           "lib/net45/_._": {}
         }
       },
-      "System.Runtime/4.0.21-beta-23516": {
+      "System.Runtime/4.0.0": {
         "type": "package",
         "compile": {
           "ref/net45/_._": {}
@@ -3144,6 +3156,54 @@
         "System.Resources.ResourceManager.nuspec"
       ]
     },
+    "System.Runtime/4.0.0": {
+      "type": "package",
+      "sha512": "Uq9epame8hEqJlj4KaWb67dDJvj4IM37jRFGVeFbugRdPz48bR0voyBhrbf3iSa2tAmlkg4lsa6BUOL9iwlMew==",
+      "files": [
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net45/_._",
+        "lib/win8/_._",
+        "lib/wp80/_._",
+        "lib/wpa81/_._",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "License.rtf",
+        "ref/dotnet/de/System.Runtime.xml",
+        "ref/dotnet/es/System.Runtime.xml",
+        "ref/dotnet/fr/System.Runtime.xml",
+        "ref/dotnet/it/System.Runtime.xml",
+        "ref/dotnet/ja/System.Runtime.xml",
+        "ref/dotnet/ko/System.Runtime.xml",
+        "ref/dotnet/ru/System.Runtime.xml",
+        "ref/dotnet/System.Runtime.dll",
+        "ref/dotnet/System.Runtime.xml",
+        "ref/dotnet/zh-hans/System.Runtime.xml",
+        "ref/dotnet/zh-hant/System.Runtime.xml",
+        "ref/MonoAndroid10/_._",
+        "ref/MonoTouch10/_._",
+        "ref/net45/_._",
+        "ref/netcore50/de/System.Runtime.xml",
+        "ref/netcore50/es/System.Runtime.xml",
+        "ref/netcore50/fr/System.Runtime.xml",
+        "ref/netcore50/it/System.Runtime.xml",
+        "ref/netcore50/ja/System.Runtime.xml",
+        "ref/netcore50/ko/System.Runtime.xml",
+        "ref/netcore50/ru/System.Runtime.xml",
+        "ref/netcore50/System.Runtime.dll",
+        "ref/netcore50/System.Runtime.xml",
+        "ref/netcore50/zh-hans/System.Runtime.xml",
+        "ref/netcore50/zh-hant/System.Runtime.xml",
+        "ref/win8/_._",
+        "ref/wp80/_._",
+        "ref/wpa81/_._",
+        "ref/xamarinios10/_._",
+        "ref/xamarinmac20/_._",
+        "System.Runtime.4.0.0.nupkg",
+        "System.Runtime.4.0.0.nupkg.sha512",
+        "System.Runtime.nuspec"
+      ]
+    },
     "System.Runtime/4.0.21-beta-23516": {
       "type": "package",
       "serviceable": true,
@@ -3715,19 +3775,21 @@
       "Newtonsoft.Json >= 8.0.3",
       "System.Collections >= 4.0.11-beta-23516",
       "System.Linq >= 4.0.1-beta-23516",
-      "System.Runtime >= 4.0.21-beta-23516",
       "System.Threading >= 4.0.11-beta-23516",
       "System.Net.Http >= 4.0.1-beta-23516"
     ],
     "DNX,Version=v4.5.1": [
-      "HtmlAgilityPack.NetCore >= 1.4.9.2"
+      "HtmlAgilityPack.NetCore >= 1.4.9.2",
+      "System.Runtime >= 4.0.21-beta-23516"
     ],
     "DNXCore,Version=v5.0": [
       "HtmlAgilityPack.NetCore >= 1.4.9.2",
-      "System.IO.Compression >= 4.0.0"
+      "System.IO.Compression >= 4.0.0",
+      "System.Runtime >= 4.0.21-beta-23516"
     ],
-    ".NETFramework,Version=v5.4.1": [
-      "HtmlAgilityPack >= 1.4.9"
+    ".NETFramework,Version=v4.6": [
+      "HtmlAgilityPack >= 1.4.9",
+      "System.Runtime >= 4.0.0"
     ]
   }
 }

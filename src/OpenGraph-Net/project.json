@@ -3,31 +3,34 @@
   "description": "Open Graph .Net Parser",
   "authors": [ "Geoff Horsey" ],
   "tags": [ "OpenGraph" ],
-  "projectUrl": "http://www.geoffhorsey.com",
-  "licenseUrl": "",
+  "projectUrl": "http://www.nuget.org/packages/OpenGraph-Net/",
+  "licenseUrl": "http://opensource.org/licenses/MIT",
   "frameworks": {
     "dnx451": {
       "dependencies": {
-        "HtmlAgilityPack.NetCore": "1.4.9.2"
+        "HtmlAgilityPack.NetCore": "1.4.9.2",
+        "System.Runtime": "4.0.21-beta-23516"
       }
     },
     "dnxcore50": {
       "dependencies": {
         "HtmlAgilityPack.NetCore": "1.4.9.2",
-        "System.IO.Compression": "4.0.0"
+        "System.IO.Compression": "4.0.0",
+        "System.Runtime": "4.0.21-beta-23516"
       }
     },
-    "net541": {
+    "net46": {
       "dependencies": {
-        "HtmlAgilityPack": "1.4.9"
+        "HtmlAgilityPack": "1.4.9",
+        "System.Runtime": "4.0.0"
       }
     }
-  }, "dependencies": {
+  },
+  "dependencies": {
     "Microsoft.CSharp": "4.0.1-beta-23516",
     "Newtonsoft.Json": "8.0.3",
     "System.Collections": "4.0.11-beta-23516",
     "System.Linq": "4.0.1-beta-23516",
-    "System.Runtime": "4.0.21-beta-23516",
     "System.Threading": "4.0.11-beta-23516",
     "System.Net.Http": "4.0.1-beta-23516"
   },
