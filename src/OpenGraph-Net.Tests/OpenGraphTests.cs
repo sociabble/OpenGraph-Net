@@ -184,5 +184,13 @@ namespace OpenGraph_Net.Tests
             Assert.AreEqual("movie", graph.Type);
             Assert.AreEqual("Amazon.com", graph["site_name"]);
         }
+
+
+        [Test]
+        public void ParseUrl_Vk_Test()
+        {
+            OpenGraph graph = OpenGraph.ParseUrl("https://vk.com/wall-41600377_66756");
+            Assert.Equals(graph["description"], "Создайте себе горное настроение с нашим первым фан-китом по игре #SteepGame&amp;#33; -&amp;gt; http://ubi.li/u8w9n");
+        }
     }
 }

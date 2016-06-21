@@ -11,15 +11,33 @@ using System.Threading.Tasks;
 namespace OpenGraph_Net
 {
     // http://stackoverflow.com/a/2700707
+    /// <summary>
+    /// 
+    /// </summary>
     public class HttpDownloader
     {
         private readonly string _referer;
         private readonly string _userAgent;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Encoding Encoding { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public WebHeaderCollection Headers { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public Uri Url { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="referer"></param>
+        /// <param name="userAgent"></param>
         public HttpDownloader(Uri url, string referer, string userAgent)
         {
             Encoding = Encoding.GetEncoding("ISO-8859-1");
@@ -27,10 +45,20 @@ namespace OpenGraph_Net
             _userAgent = userAgent;
             _referer = referer;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="referer"></param>
+        /// <param name="userAgent"></param>
         public HttpDownloader(string url, string referer, string userAgent) : this(new Uri(url), referer, userAgent)
         {
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string GetPage()
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);

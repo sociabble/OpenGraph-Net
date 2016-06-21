@@ -110,3 +110,4 @@ UpgradeLog*.XML
 
 #python
 *.pyc
+/src/_nugetBuild/PushLastPackageTemplate.bat
