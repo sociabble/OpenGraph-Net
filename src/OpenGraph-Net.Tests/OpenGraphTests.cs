@@ -180,7 +180,7 @@ namespace OpenGraph_Net.Tests
             Assert.AreEqual("http://www.amazon.com/dp/B0019MFY3Q/ref=tsm_1_fb_lk", graph.Url.ToString());
             Assert.IsTrue(graph.Title.StartsWith("Spaced: The Complete Series"));
             Assert.IsTrue(graph["description"].Contains("Spaced"));
-            Assert.IsTrue(graph.Image.ToString().StartsWith("http://ecx.images-amazon.com/images/I"));
+            Assert.IsTrue(graph.Image.ToString().StartsWith("https://images-na.ssl-images-amazon.com/images/I"));
             Assert.AreEqual("movie", graph.Type);
             Assert.AreEqual("Amazon.com", graph["site_name"]);
         }

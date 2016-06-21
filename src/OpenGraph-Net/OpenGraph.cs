@@ -303,21 +303,24 @@ namespace OpenGraph_Net
                 {
                     continue;
                 }
-
-                result.openGraphData.Add(property, value);
+                
+                var theVal = (property ?? "").Equals("image", StringComparison.InvariantCultureIgnoreCase)
+                    ? System.Web.HttpUtility.HtmlDecode((value ?? ""))
+                    : value;
+                result.openGraphData.Add(property, theVal);
             }
 
-            string type = string.Empty;
+            string type;
             result.openGraphData.TryGetValue("type", out type);
             result.Type = type ?? string.Empty;
 
-            string title = string.Empty;
+            string title;
             result.openGraphData.TryGetValue("title", out title);
             result.Title = title ?? string.Empty;
 
             try
             {
-                string image = string.Empty;
+                string image;
                 result.openGraphData.TryGetValue("image", out image);
                 result.Image = new Uri(image);
             }
