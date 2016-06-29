@@ -136,32 +136,43 @@ namespace OpenGraph_Net
 
         private string CheckMetaCharSetAndReEncode(Stream memStream, string html)
         {
-            Match m = new Regex(@"<meta\s+.*?charset\s*=\s*(?<charset>[A-Za-z0-9_-]+)", RegexOptions.Singleline | RegexOptions.IgnoreCase).Match(html);
-            if (m.Success)
+            try
             {
-                string charset = m.Groups["charset"].Value.ToLower() ?? "iso-8859-1";
-                if ((charset == "unicode") || (charset == "utf-16"))
-                {
-                    charset = "utf-8";
-                }
+                var m = new Regex(@"<meta\s+.*?charset\s*=\s*(?<charset>[A-Za-z0-9_-]+)", RegexOptions.Singleline | RegexOptions.IgnoreCase).Match(html);
+                var charset = m.Success ? m.Groups["charset"].Value.ToLower() : GetCharsetFrom(html);
 
-                try
+                if (string.IsNullOrWhiteSpace(charset)) return html;
+
+                if ((charset == "unicode") || (charset == "utf-16")) charset = "utf-8";
+            
+                var metaEncoding = Encoding.GetEncoding(charset);
+                if (Encoding != metaEncoding)
                 {
-                    Encoding metaEncoding = Encoding.GetEncoding(charset);
-                    if (Encoding != metaEncoding)
-                    {
-                        memStream.Position = 0L;
-                        StreamReader recodeReader = new StreamReader(memStream, metaEncoding);
-                        html = recodeReader.ReadToEnd().Trim();
-                        recodeReader.Close();
-                    }
+                    memStream.Position = 0L;
+                    var recodeReader = new StreamReader(memStream, metaEncoding);
+                    html = recodeReader.ReadToEnd().Trim();
+                    recodeReader.Close();
                 }
-                catch (ArgumentException)
-                {
-                }
+            }
+            catch (ArgumentException)
+            {
             }
 
             return html;
+        }
+
+        private string GetCharsetFrom(string strWebPage)
+        {
+            if (strWebPage == null) return null;
+
+            const string charsetSearchedKey = "charset=\"";
+            var charsetStart = strWebPage.IndexOf(charsetSearchedKey, StringComparison.Ordinal);
+
+            if (charsetStart <= 0) return null;
+
+            charsetStart += charsetSearchedKey.Length;
+            var charsetEnd = strWebPage.IndexOfAny(new[] { ' ', '\"', ';' }, charsetStart);
+            return strWebPage.Substring(charsetStart, charsetEnd - charsetStart);
         }
     }
 }
