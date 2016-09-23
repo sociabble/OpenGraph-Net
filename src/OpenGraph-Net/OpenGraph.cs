@@ -67,6 +67,11 @@ namespace OpenGraph_Net
         private IDictionary<string, string> openGraphData;
 
         /// <summary>
+        /// The twitter cards data
+        /// </summary>
+        private IDictionary<string, string> twitterCardsData;
+
+        /// <summary>
         /// The local alternatives
         /// </summary>
         private IList<string> localAlternatives;
@@ -107,6 +112,7 @@ namespace OpenGraph_Net
         private OpenGraph()
         {
             this.openGraphData = new Dictionary<string, string>();
+            this.twitterCardsData = new Dictionary<string, string>();
             this.localAlternatives = new List<string>();
         }
 
@@ -359,8 +365,118 @@ namespace OpenGraph_Net
                 }
             }
 
+            //add twitter metas;
+            result = AddTwitterMetas(allMeta, result);
+
             return result;
         }
+
+        #region Twitter Metas
+        private static OpenGraph AddTwitterMetas(HtmlNodeCollection allMeta, OpenGraph result)
+        {
+            var twitterMetaTags = (from meta in allMeta ?? new HtmlNodeCollection(null)
+                                  where (meta.Attributes.Contains("property") && meta.Attributes["property"].Value.StartsWith("twitter:")) ||
+                                  (meta.Attributes.Contains("name") && meta.Attributes["name"].Value.StartsWith("twitter:"))
+                                  select meta).ToList();
+
+            if (!twitterMetaTags.Any()) return result;
+
+            foreach (HtmlNode metaTag in twitterMetaTags)
+            {
+                string value = GetOpenGraphValue(metaTag);
+                string property = GetOpenGraphKey(metaTag);
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    continue;
+                }
+
+                if (result.twitterCardsData.ContainsKey(property))
+                {
+                    continue;
+                }
+
+                var theVal = (property ?? "").Equals("image", StringComparison.InvariantCultureIgnoreCase)
+                    ? System.Web.HttpUtility.HtmlDecode((value ?? ""))
+                    : value;
+                result.twitterCardsData.Add(property, theVal);
+            }
+
+            try
+            {
+                string card;
+                result.twitterCardsData.TryGetValue("twitter:card", out card);
+                result.TwitterCard = card;
+            }
+            catch (Exception e)
+            {
+                //ignored
+            }
+            try
+            {
+                string d;
+                result.twitterCardsData.TryGetValue("twitter:description", out d);
+                result.TwitterDescription = d;
+            }
+            catch (Exception e)
+            {
+                //ignored
+            }
+            try
+            {
+                string t;
+                result.twitterCardsData.TryGetValue("twitter:title", out t);
+                result.TwitterTitle = t;
+            }
+            catch (Exception e)
+            {
+                //ignored
+            }
+            try
+            {
+                string site;
+                result.twitterCardsData.TryGetValue("twitter:site", out site);
+                result.TwitterSite = site;
+            }
+            catch (Exception e)
+            {
+                //ignored
+            }
+            try
+            {
+                string image;
+                result.twitterCardsData.TryGetValue("twitter:image", out image);
+                result.TwitterImage = image;
+            }
+            catch (Exception e)
+            {
+                //ignored
+            }
+            try
+            {
+                string creator;
+                result.twitterCardsData.TryGetValue("twitter:creator", out creator);
+                result.TwitterCreator = creator;
+            }
+            catch (Exception e)
+            {
+                //ignored
+            }
+
+            return result;
+        }
+        
+        public string TwitterCreator { get; set; }
+
+        public string TwitterImage { get; set; }
+
+        public string TwitterSite { get; set; }
+
+        public string TwitterTitle { get; set; }
+
+        public string TwitterDescription { get; set; }
+
+        public string TwitterCard { get; set; }
+        #endregion
 
         /// <summary>
         /// Gets the open graph key.

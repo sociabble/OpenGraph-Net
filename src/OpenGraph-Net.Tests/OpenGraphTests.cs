@@ -209,6 +209,18 @@ namespace OpenGraph_Net.Tests
         }
 
 
+        [Test]
+        public void ParseUrl_TwitterMetas_Test()
+        {
+            var ogs = ParseUrl("http://www.sociabble.com/blog/sociabble-shares-social-selling-expertise-microsoft-experiences-hubforum-paris/");
+            Assert.AreEqual(ogs.TwitterCard, "summary_large_image");
+            Assert.AreEqual(ogs.TwitterDescription, "Microsoft experiences is teaming up with HUBFORUM Paris for a day dedicated to digital innovation. Sociabble will host two sessions on social selling.");
+            Assert.AreEqual(ogs.TwitterTitle, "Sociabble at Microsoft experiences and HUBFORUM Paris");
+            Assert.AreEqual(ogs.TwitterSite, "@SociabbleApp");
+            Assert.AreEqual(ogs.TwitterImage, "http://www.sociabble.com/wp-content/uploads/2016/09/MS-Experiences-2016_opt.png");
+            Assert.AreEqual(ogs.TwitterCreator, "@SociabbleApp");
+        }
+
         protected OpenGraph ParseUrl(string u)
         {
             return OpenGraph.ParseUrl(u);
