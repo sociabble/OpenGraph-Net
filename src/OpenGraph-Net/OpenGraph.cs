@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Diagnostics.CodeAnalysis;
+using OpenGraph_Net.Extensions;
 
 [module: SuppressMessage("Microsoft.StyleCop.CSharp.OrderingRules", "*", Justification = "Reviewed.")]
 
@@ -11,13 +12,9 @@ namespace OpenGraph_Net
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.IO;
     using System.Linq;
-    using System.Net;
     using System.Text.RegularExpressions;
     using HtmlAgilityPack;
-    using System.Text;
-    using System.Collections.Specialized;
 
 
 
@@ -107,14 +104,24 @@ namespace OpenGraph_Net
         public Uri OriginalUrl { get; private set; }
 
         /// <summary>
+        /// Twitter cards data (if found).
+        /// </summary>
+        public TwitterCards TwitterCards { get; set; }
+        public PageData Page { get; set; }
+
+        /// <summary>
         /// Prevents a default instance of the <see cref="OpenGraph" /> class from being created.
         /// </summary>
         private OpenGraph()
         {
             this.openGraphData = new Dictionary<string, string>();
             this.twitterCardsData = new Dictionary<string, string>();
+            this.TwitterCards = new TwitterCards();
+            this.Page = new PageData();
             this.localAlternatives = new List<string>();
         }
+
+        
 
         /// <summary>
         /// Makes the graph.
@@ -291,6 +298,20 @@ namespace OpenGraph_Net
 
             HtmlNodeCollection allMeta = document.DocumentNode.SelectNodes("//meta");
 
+            // add og metas
+            result = AddOg(allMeta, result, validateSpecification);
+
+            // add twitter metas;
+            result = AddTwitterMetas(allMeta, result);
+
+            // add title and desc if exists
+            result = AddMetas(document, allMeta, result);
+
+            return result;
+        }
+
+        private static OpenGraph AddOg(HtmlNodeCollection allMeta, OpenGraph result, bool validateSpecification = false)
+        {
             var openGraphMetaTags = from meta in allMeta ?? new HtmlNodeCollection(null)
                                     where (meta.Attributes.Contains("property") && meta.Attributes["property"].Value.StartsWith("og:")) ||
                                     (meta.Attributes.Contains("name") && meta.Attributes["name"].Value.StartsWith("og:"))
@@ -309,7 +330,7 @@ namespace OpenGraph_Net
                 {
                     continue;
                 }
-                
+
                 var theVal = (property ?? "").Equals("image", StringComparison.InvariantCultureIgnoreCase)
                     ? System.Web.HttpUtility.HtmlDecode((value ?? ""))
                     : value;
@@ -364,14 +385,36 @@ namespace OpenGraph_Net
                     }
                 }
             }
-
-            //add twitter metas;
-            result = AddTwitterMetas(allMeta, result);
-
             return result;
         }
 
-        #region Twitter Metas
+        /// <summary>
+        /// Add page datas
+        /// </summary>
+        /// <param name="document"></param>
+        /// <param name="allMeta"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        private static OpenGraph AddMetas(HtmlDocument document, HtmlNodeCollection allMeta, OpenGraph result)
+        {
+            try
+            {
+                result.Page.Title = document.DocumentNode.SelectNodes("//head")?.FirstOrDefault()?.Descendants("title")?.FirstOrDefault()?.InnerText?.Trim();
+                result.Page.Description = allMeta.FirstOrDefault(m => m.Attributes.Contains("name") && m.Attributes["name"].Value == "description" && m.Attributes.Contains("content"))?.Attributes["content"]?.Value;
+            }
+            catch
+            {
+                //ignored;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Add Twitter cards if found
+        /// </summary>
+        /// <param name="allMeta"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         private static OpenGraph AddTwitterMetas(HtmlNodeCollection allMeta, OpenGraph result)
         {
             var twitterMetaTags = (from meta in allMeta ?? new HtmlNodeCollection(null)
@@ -401,82 +444,17 @@ namespace OpenGraph_Net
                 result.twitterCardsData.Add(property, theVal);
             }
 
-            try
-            {
-                string card;
-                result.twitterCardsData.TryGetValue("twitter:card", out card);
-                result.TwitterCard = card;
-            }
-            catch (Exception e)
-            {
-                //ignored
-            }
-            try
-            {
-                string d;
-                result.twitterCardsData.TryGetValue("twitter:description", out d);
-                result.TwitterDescription = d;
-            }
-            catch (Exception e)
-            {
-                //ignored
-            }
-            try
-            {
-                string t;
-                result.twitterCardsData.TryGetValue("twitter:title", out t);
-                result.TwitterTitle = t;
-            }
-            catch (Exception e)
-            {
-                //ignored
-            }
-            try
-            {
-                string site;
-                result.twitterCardsData.TryGetValue("twitter:site", out site);
-                result.TwitterSite = site;
-            }
-            catch (Exception e)
-            {
-                //ignored
-            }
-            try
-            {
-                string image;
-                result.twitterCardsData.TryGetValue("twitter:image", out image);
-                result.TwitterImage = image;
-            }
-            catch (Exception e)
-            {
-                //ignored
-            }
-            try
-            {
-                string creator;
-                result.twitterCardsData.TryGetValue("twitter:creator", out creator);
-                result.TwitterCreator = creator;
-            }
-            catch (Exception e)
-            {
-                //ignored
-            }
-
+            
+            result.TwitterCards.Card = result.twitterCardsData.GetStringVal("twitter:card");
+            result.TwitterCards.Description = result.twitterCardsData.GetStringVal("twitter:description");
+            result.TwitterCards.Title = result.twitterCardsData.GetStringVal("twitter:title");
+            result.TwitterCards.Site = result.twitterCardsData.GetStringVal("twitter:site");
+            result.TwitterCards.Image = result.twitterCardsData.GetStringVal("twitter:image");
+            result.TwitterCards.Creator = result.twitterCardsData.GetStringVal("twitter:creator");
             return result;
         }
+
         
-        public string TwitterCreator { get; set; }
-
-        public string TwitterImage { get; set; }
-
-        public string TwitterSite { get; set; }
-
-        public string TwitterTitle { get; set; }
-
-        public string TwitterDescription { get; set; }
-
-        public string TwitterCard { get; set; }
-        #endregion
 
         /// <summary>
         /// Gets the open graph key.

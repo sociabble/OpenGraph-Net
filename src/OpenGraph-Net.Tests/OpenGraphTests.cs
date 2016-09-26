@@ -213,12 +213,14 @@ namespace OpenGraph_Net.Tests
         public void ParseUrl_TwitterMetas_Test()
         {
             var ogs = ParseUrl("http://www.sociabble.com/blog/sociabble-shares-social-selling-expertise-microsoft-experiences-hubforum-paris/");
-            Assert.AreEqual(ogs.TwitterCard, "summary_large_image");
-            Assert.AreEqual(ogs.TwitterDescription, "Microsoft experiences is teaming up with HUBFORUM Paris for a day dedicated to digital innovation. Sociabble will host two sessions on social selling.");
-            Assert.AreEqual(ogs.TwitterTitle, "Sociabble at Microsoft experiences and HUBFORUM Paris");
-            Assert.AreEqual(ogs.TwitterSite, "@SociabbleApp");
-            Assert.AreEqual(ogs.TwitterImage, "http://www.sociabble.com/wp-content/uploads/2016/09/MS-Experiences-2016_opt.png");
-            Assert.AreEqual(ogs.TwitterCreator, "@SociabbleApp");
+            Assert.AreEqual(ogs.TwitterCards.Card, "summary_large_image");
+            Assert.AreEqual(ogs.TwitterCards.Description, "Microsoft experiences is teaming up with HUBFORUM Paris for a day dedicated to digital innovation. Sociabble will host two sessions on social selling.");
+            Assert.AreEqual(ogs.TwitterCards.Title, "Sociabble at Microsoft experiences and HUBFORUM Paris");
+            Assert.AreEqual(ogs.TwitterCards.Site, "@SociabbleApp");
+            Assert.AreEqual(ogs.TwitterCards.Image, "http://www.sociabble.com/wp-content/uploads/2016/09/MS-Experiences-2016_opt.png");
+            Assert.AreEqual(ogs.TwitterCards.Creator, "@SociabbleApp");
+            Assert.AreEqual(ogs.Page.Title, "Sociabble at Microsoft experiences and HUBFORUM Paris");
+            Assert.AreEqual(ogs.Page.Description, "Microsoft experiences is teaming up with HUBFORUM Paris for a day dedicated to digital innovation. Sociabble will host two sessions on social selling.");
         }
 
         protected OpenGraph ParseUrl(string u)
