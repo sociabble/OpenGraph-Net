@@ -107,6 +107,9 @@ namespace OpenGraph_Net
         /// Twitter cards data (if found).
         /// </summary>
         public TwitterCards TwitterCards { get; set; }
+        /// <summary>
+        /// Page informations
+        /// </summary>
         public PageData Page { get; set; }
 
         /// <summary>
