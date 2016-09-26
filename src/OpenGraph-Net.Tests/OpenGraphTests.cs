@@ -221,7 +221,11 @@ namespace OpenGraph_Net.Tests
             Assert.AreEqual(ogs.TwitterCards.Creator, "@SociabbleApp");
             Assert.AreEqual(ogs.Page.Title, "Sociabble at Microsoft experiences and HUBFORUM Paris");
             Assert.AreEqual(ogs.Page.Description, "Microsoft experiences is teaming up with HUBFORUM Paris for a day dedicated to digital innovation. Sociabble will host two sessions on social selling.");
+
+            var ogImg = ParseUrl("http://www.frenchweb.fr/la-transformation-digitale-est-une-erreur/257435");
+            Assert.AreEqual(ogImg.TwitterCards.Image, "http://www.frenchweb.fr/wp-content/uploads/2013/06/10-erreurs-startup-a-eviter.jpg");
         }
+
 
         protected OpenGraph ParseUrl(string u)
         {
