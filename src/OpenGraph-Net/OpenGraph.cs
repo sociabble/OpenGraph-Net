@@ -453,6 +453,8 @@ namespace OpenGraph_Net
             result.TwitterCards.Title = result.twitterCardsData.GetStringVal("twitter:title");
             result.TwitterCards.Site = result.twitterCardsData.GetStringVal("twitter:site");
             result.TwitterCards.Image = result.twitterCardsData.GetStringVal("twitter:image");
+            if(string.IsNullOrWhiteSpace(result.TwitterCards.Image))
+                result.TwitterCards.Image = result.twitterCardsData.GetStringVal("twitter:image:src");
             result.TwitterCards.Creator = result.twitterCardsData.GetStringVal("twitter:creator");
             return result;
         }
