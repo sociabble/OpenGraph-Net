@@ -2,6 +2,8 @@
 // Copyright SHHH Innovations LLC
 // </copyright>
 
+using System;
+
 namespace OpenGraph_Net.Tests
 {
     using NUnit.Framework;
@@ -226,6 +228,19 @@ namespace OpenGraph_Net.Tests
             Assert.AreEqual(ogImg.TwitterCards.Image, "http://www.frenchweb.fr/wp-content/uploads/2013/06/10-erreurs-startup-a-eviter.jpg");
         }
 
+        [Test]
+        public void ParseUrl_Bitly()
+        {
+            try
+            {
+                var ogs = ParseUrl("http://bit.ly/2h0if6I");
+                Assert.IsNotNull(ogs);
+            }
+            catch(Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
 
         protected OpenGraph ParseUrl(string u)
         {

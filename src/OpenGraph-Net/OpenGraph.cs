@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using OpenGraph_Net.Extensions;
 
 [module: SuppressMessage("Microsoft.StyleCop.CSharp.OrderingRules", "*", Justification = "Reviewed.")]
@@ -122,9 +123,14 @@ namespace OpenGraph_Net
             this.TwitterCards = new TwitterCards();
             this.Page = new PageData();
             this.localAlternatives = new List<string>();
+            this.IsHttpCallSuccessfull = true;
         }
-
         
+        /// <summary>
+        /// HttpCall was successfully made ?
+        /// </summary>
+        public bool IsHttpCallSuccessfull { get; set; }
+
 
         /// <summary>
         /// Makes the graph.
@@ -258,13 +264,22 @@ namespace OpenGraph_Net
         /// <returns><see cref="OpenGraph"/></returns>
         public static OpenGraph ParseUrl(Uri url, string userAgent = "facebookexternalhit", bool validateSpecification = false)
         {
-            OpenGraph result = new OpenGraph();
+            var result = new OpenGraph
+            {
+                OriginalUrl = url
+            };
 
-            result.OriginalUrl = url;
-
-            string html = string.Empty;
-            HttpDownloader downloader = new HttpDownloader(url, null, userAgent);
-            html = downloader.GetPage();
+            var html = string.Empty;
+            try
+            {
+                var downloader = new HttpDownloader(url, null, userAgent);
+                html = downloader.GetPage();
+            }
+            catch
+            {
+                result.IsHttpCallSuccessfull = false;
+                return result;
+            }
 
             return ParseHtml(result, html, validateSpecification);
         }
@@ -277,7 +292,7 @@ namespace OpenGraph_Net
         /// <returns><see cref="OpenGraph"/></returns>
         public static OpenGraph ParseHtml(string content, bool validateSpecification = false)
         {
-            OpenGraph result = new OpenGraph();
+            var result = new OpenGraph();
             return ParseHtml(result, content, validateSpecification);
         }
 
