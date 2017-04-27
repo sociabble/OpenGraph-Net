@@ -246,5 +246,13 @@ namespace OpenGraph_Net.Tests
         {
             return OpenGraph.ParseUrl(u);
         }
+
+        [Test]
+        public void ParseUrl_TwitterCard_Player()
+        {
+            var ogs = ParseUrl("http://www.dailymotion.com/video/x5jiyoc_genius-episode-1-episode-entier_tv");
+            Assert.AreEqual(ogs.TwitterCards.Card, "player");
+            Assert.AreEqual(ogs.TwitterCards.Player, "https://www.dailymotion.com/embed/video/x5jiyoc");
+        }
     }
 }

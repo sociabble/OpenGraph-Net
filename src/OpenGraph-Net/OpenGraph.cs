@@ -471,6 +471,7 @@ namespace OpenGraph_Net
             if(string.IsNullOrWhiteSpace(result.TwitterCards.Image))
                 result.TwitterCards.Image = result.twitterCardsData.GetStringVal("twitter:image:src");
             result.TwitterCards.Creator = result.twitterCardsData.GetStringVal("twitter:creator");
+            result.TwitterCards.Player = result.twitterCardsData.GetStringVal("twitter:player");
             return result;
         }
 
@@ -510,12 +511,15 @@ namespace OpenGraph_Net
         /// <returns>Returns the value from the meta tag</returns>
         private static string GetOpenGraphValue(HtmlNode metaTag)
         {
-            if (!metaTag.Attributes.Contains("content"))
+            if (metaTag.Attributes.Contains("content"))
             {
-                return string.Empty;
+                return metaTag.Attributes["content"].Value;
             }
-
-            return metaTag.Attributes["content"].Value;
+            if (metaTag.Attributes.Contains("value"))
+            {
+                return metaTag.Attributes["value"].Value;
+            }
+            return string.Empty;
         }
 
         #region IDictionary<string,string> Members

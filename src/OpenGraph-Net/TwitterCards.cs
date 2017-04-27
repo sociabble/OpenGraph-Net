@@ -34,5 +34,10 @@
         /// twitter:card
         /// </summary>
         public string Card { get; set; }
+
+        /// <summary>
+        /// twitter:player
+        /// </summary>
+        public string Player { get; set; }
     }
 }
