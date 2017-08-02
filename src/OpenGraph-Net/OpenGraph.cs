@@ -116,7 +116,7 @@ namespace OpenGraph_Net
         /// <summary>
         /// Prevents a default instance of the <see cref="OpenGraph" /> class from being created.
         /// </summary>
-        public OpenGraph()
+        private OpenGraph()
         {
             this.openGraphData = new Dictionary<string, string>();
             this.twitterCardsData = new Dictionary<string, string>();
