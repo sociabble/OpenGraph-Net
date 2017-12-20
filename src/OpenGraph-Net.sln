@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2010
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenGraph-Net", "OpenGraph-Net\OpenGraph-Net.csproj", "{83B06B28-41D2-45A3-B559-92DB0C9685E6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenGraph-Net.Tests", "OpenGraph-Net.Tests\OpenGraph-Net.Tests.csproj", "{6E30D29D-FF7F-46D7-A238-C44055AA4498}"
@@ -14,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		OpenGraph-Net\OpenGraph-Net.nuspec = OpenGraph-Net\OpenGraph-Net.nuspec
 		..\README.md = ..\README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{0BD9BF9B-EF04-4CC0-852D-E34D9B6DA0BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,11 +35,18 @@ Global
 		{6E30D29D-FF7F-46D7-A238-C44055AA4498}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CB23A608-13B9-43FB-BC2A-760454F314D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CB23A608-13B9-43FB-BC2A-760454F314D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BD9BF9B-EF04-4CC0-852D-E34D9B6DA0BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BD9BF9B-EF04-4CC0-852D-E34D9B6DA0BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BD9BF9B-EF04-4CC0-852D-E34D9B6DA0BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BD9BF9B-EF04-4CC0-852D-E34D9B6DA0BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CB23A608-13B9-43FB-BC2A-760454F314D3} = {E5616E4D-C0BC-4FEE-BAD4-728A25F4F833}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C1D113B0-BFE1-45BA-9BE1-5E70B21EE7E9}
 	EndGlobalSection
 EndGlobal
